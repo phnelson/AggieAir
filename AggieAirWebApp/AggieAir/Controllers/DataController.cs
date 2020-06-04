@@ -41,8 +41,6 @@ namespace AggieAir.Controllers
                 PM_ARRAY.Add(Convert.ToDecimal(each.PM25));
 
                 string[] GPGLL_split = each.GPGLL.Split(new Char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                //Console.WriteLine(GPGLL_split[0]);
-                //Console.WriteLine(GPGLL_split[1]);
 
                 LAT_ARRAY.Add(decimal.Parse(GPGLL_split[0]));
                 LNG_ARRAY.Add(decimal.Parse(GPGLL_split[1]));
@@ -81,20 +79,6 @@ namespace AggieAir.Controllers
         // POST: SensorData/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //public ActionResult Create(IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        // TODO: Add insert logic here
-
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
-
         public IActionResult Create(SensorData sensordata)
         {
 
@@ -121,7 +105,6 @@ namespace AggieAir.Controllers
         {
             try
             {
-                // TODO: Add update logic here
 
                 return RedirectToAction(nameof(Index));
             }
@@ -144,7 +127,6 @@ namespace AggieAir.Controllers
         {
             try
             {
-                // TODO: Add delete logic here
 
                 return RedirectToAction(nameof(Index));
             }
