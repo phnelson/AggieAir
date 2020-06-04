@@ -16,7 +16,7 @@ namespace AggieAir.Services
 
         public DataService(IConfiguration config)
         {
-
+            // Omitted connection strings
         }
 
         public List<SensorData> Get()
