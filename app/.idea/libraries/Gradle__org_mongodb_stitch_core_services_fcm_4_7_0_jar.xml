@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: org.mongodb:stitch-core-services-fcm:4.7.0@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mongodb/stitch-core-services-fcm/4.7.0/b813280abe2be38c3fbdfb63549c9e91168752fb/stitch-core-services-fcm-4.7.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mongodb/stitch-core-services-fcm/4.7.0/b20a12ef5f70f45c7d2d879e186fa966aa6c8584/stitch-core-services-fcm-4.7.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mongodb/stitch-core-services-fcm/4.7.0/8ff12cb3d212640d84f3b4fc899262f8a8fe00d2/stitch-core-services-fcm-4.7.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

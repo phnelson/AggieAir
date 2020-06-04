@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: org.mongodb:stitch-core-services-twilio:4.7.0@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mongodb/stitch-core-services-twilio/4.7.0/2c933993d1e01341abd5777d933c7247a7e44efa/stitch-core-services-twilio-4.7.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mongodb/stitch-core-services-twilio/4.7.0/8f9af3f3ae32382f9b540ce8b71a0f68b2854e4c/stitch-core-services-twilio-4.7.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mongodb/stitch-core-services-twilio/4.7.0/c2cd54ef895fc8bf76081687b0fda1f31f403230/stitch-core-services-twilio-4.7.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
