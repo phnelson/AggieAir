@@ -1,0 +1,535 @@
+﻿@model IEnumerable<AggieAir.Models.SensorData>
+
+@{
+    ViewData["Title"] = "Visualizer";
+}
+
+
+
+<div class="text-center">
+    <span class="display-4 text-white-50" style="font-size: 90px;">aggie</span>
+    <span class="display-4" style="font-size: 90px;">air</span>
+</div>
+
+<br />
+
+<div class="slidecontainer">
+    <input type="range" min="-7" max="0" value="0" class="slider" id="myRange">
+    <p class="text-center " style="color: grey;">Displaying: <span id="demo"></span> day(s) ago</p>
+</div>
+
+<script>
+    var slider = document.getElementById("myRange");
+    var output = document.getElementById("demo");
+</script>
+
+<br />
+<div class="text-center">
+    <button id ="overlay_button" onclick="overlay_on()">Color Legend</button>
+</div>
+
+
+<fieldset style="background-color: #171717;">
+    <br />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <div id="googleMap" style="height:800px;"></div> <!--700px-->
+    <script>
+
+        var datapoints_arrays = [];
+        var count = @ViewBag.COUNT;
+
+        function getData() {
+            // Get data from ViewBag
+            var array = @Html.Raw(Json.Serialize(ViewBag.PM_ARRAY));
+            var array1 = @Html.Raw(Json.Serialize(ViewBag.LAT_ARRAY));
+            var array2 = @Html.Raw(Json.Serialize(ViewBag.LNG_ARRAY));
+            var array3 = @Html.Raw(Json.Serialize(ViewBag.TIME_ARRAY));
+            var array4 = @Html.Raw(Json.Serialize(ViewBag.DATE_ARRAY));
+
+            // Process and dtore data in client-side vector
+            for (index = 0; index < count; index++) {
+                var temp_array = [array[index], array1[index], array2[index], array3[index], array4[index]];
+                datapoints_arrays.push(temp_array);
+            }
+        }
+        getData();
+
+        // Get today
+        var today = new Date();
+
+        // Init vector of displayed circles
+        var active_circles = [];
+
+        // Init Google Maps object with styling
+        function myMap() {
+            var myCenter = new google.maps.LatLng(38.539302, -121.755880);
+            // of Davis, CA ->  .LatLng(38.5449, -121.7405);
+            // of UC Davis, by SciLec -> .LatLng(38.540302, -121.755880)
+            var mapProp = {
+                center: myCenter,
+                zoom: 15,
+                scrollwheel: true,
+                draggable: true,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                mapTypeControlOptions: true,
+                minZoom: 14,
+                maxZoom: 18,
+                clickableIcons: false,
+                fullscreenControl: false,
+                disableDefaultUI: true,
+                styles: [
+                    {
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#171717"
+                            }
+                        ]
+                    },
+                    {
+                        "elementType": "labels.icon",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#746855"
+                            }
+                        ]
+                    },
+                    {
+                        "elementType": "labels.text.stroke",
+                        "stylers": [
+                            {
+                                "color": "#171717"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "administrative",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                                //"color": "#757575"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "administrative.locality",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                //"color": "#d59563"
+                                "color": "#9ca5b3"
+                            }
+                        ]
+                    },
+                    //{
+                    //    "featureType": "poi",
+                    //    "stylers": [
+                    //        {
+                    //            "visibility": "off"
+                    //        }
+                    //    ]
+                    //},
+                    {
+                        "featureType": "poi",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                //"color": "#d59563"
+                                "color": "#9ca5b3"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.park",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#263c3f"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.park",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#6b9a76"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#38414e"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                            {
+                                "color": "#212a37"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "labels.icon",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#9ca5b3"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#746855"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                            {
+                                "color": "#1f2835"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#f3d19c"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#2f3948"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit.station",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#d59563"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#17263c"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#515c6d"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "labels.text.stroke",
+                        "stylers": [
+                            {
+                                "color": "#17263c"
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            // Link to HTML ID
+            var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+            // Init slider to 0 and populate with data from past 24 hours
+            output.innerHTML = 0;
+            populate(today, 0, map);
+
+
+            // Get slider value
+            slider.oninput = function () {
+
+                // Update display timerange
+                output.innerHTML = (-1) * this.value;
+
+                // Clear existing circles
+                for (var i in active_circles) {
+                    active_circles[i].setMap(null);
+                }
+
+                // Call function to populate the map
+                populate(today, this.value, map);
+
+            }
+        }
+
+        // Function to parse and populate map with datapoint within specified time range (per 24 hour intervals!)
+        function populate(today, endTime, map) {
+
+            for (index = 0; index < count; index++) {
+                // Get values from client-side array
+                var PM25 = datapoints_arrays[index][0];
+                var LAT = datapoints_arrays[index][1];
+                var LNG = datapoints_arrays[index][2];
+                var center = { lat: LAT, lng: LNG };
+                var time = datapoints_arrays[index][3];
+                var date = datapoints_arrays[index][4];
+
+                // Parse for conversion
+                var day = parseInt(date.substring(0, 2));
+                var month = parseInt(date.substring(2, 4)) - 1;
+                var year = parseInt("20" + date.substring(4, 6));
+                var hours = parseInt(time.substring(0, 2));
+                var minutes = parseInt(time.substring(2, 4));
+                var seconds = parseInt(time.substring(4, 6));
+
+                var datapoint_datetime = new Date(year, month, day, hours, minutes, seconds, 0);
+
+                var how_long_ago = datapoint_datetime.getTime() - today.getTime();
+
+                var range_left_bound = (endTime-1) * 86400000;
+                var range_right_bound = endTime * 86400000;
+
+                // If datapoint is within the desired timeframe, push to active_circle vector
+                if (how_long_ago >= range_left_bound && how_long_ago <= range_right_bound) {
+
+                    // Determine circle color by PM range (values specified by client based on research!)
+                    if (PM25 <= 12) {
+                        var newCircle = new google.maps.Circle({
+                            //strokeColor: '#008000',
+                            strokeColor: '#231798',
+                            strokeOpacity: 0.8,
+                            strokeWeight: 2,
+                            fillColor: '#231798',
+                            fillOpacity: 0.5,
+                            map: map,
+                            center: center,
+                            radius: 6
+                        });
+                    }
+
+                    else if (PM25 <= 35) {
+                        var newCircle = new google.maps.Circle({
+                            strokeColor: '#621891',
+                            strokeOpacity: 0.8,
+                            strokeWeight: 2,
+                            fillColor: '#621891',
+                            fillOpacity: 0.5,
+                            map: map,
+                            center: center,
+                            radius: 6
+                        });
+                    }
+
+                    else if (PM25 <= 55) {
+                        var newCircle = new google.maps.Circle({
+                            strokeColor: '#9C50D8',
+                            strokeOpacity: 0.8,
+                            strokeWeight: 2,
+                            fillColor: '#9C50D8',
+                            fillOpacity: 0.5,
+                            map: map,
+                            center: center,
+                            radius: 6
+                        });
+                    }
+
+                    else if (PM25 <= 150) {
+                        var newCircle = new google.maps.Circle({
+                            strokeColor: '#B843C9',
+                            strokeOpacity: 0.8,
+                            strokeWeight: 2,
+                            fillColor: '#B843C9',
+                            fillOpacity: 0.5,
+                            map: map,
+                            center: center,
+                            radius: 6
+                        });
+                    }
+
+                    else {
+                        var newCircle = new google.maps.Circle({
+                            strokeColor: '#D20BB1',
+                            strokeOpacity: 0.8,
+                            strokeWeight: 2,
+                            fillColor: '#D20BB1',
+                            fillOpacity: 0.5,
+                            map: map,
+                            center: center,
+                            radius: 6
+                        });
+                    }
+                    // Push created circle in to the vector
+                    active_circles.push(newCircle);
+                }
+
+            }
+        }
+
+
+
+
+    </script>
+    
+</fieldset>
+
+
+<div id="overlay" onclick="overlay_off()">
+    <div>
+        <div class="text-center" style="color: gray; margin-top: 100px; font-size: 35px;">
+            <p>Particulate Matter 2.5 Level Mapping:</p>
+            <p><span style="color: #231798">Good: </span><span>0 - 12.0</span></p>
+            <p><span style="color: #621891">Moderate: </span><span>12.1 - 35.4</span></p>
+            <p><span style="color: #9C50D8">Danger: </span><span>35.5 - 55.4</span></p>
+            <p><span style="color: #B843C9">Hazard: </span><span>55.5 - 150.4</span></p>
+            <p><span style="color: #D20BB1">Extreme: </span><span>150.5+</span></p>
+        </div>
+    </div>
+</div>
+<style>
+    #overlay {
+        position: fixed; /* Sit on top of the page content */
+        display: none; /* Hidden by default */
+        width: 100%; /* Full width (cover the whole page) */
+        height: 100%; /* Full height (cover the whole page) */
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.9); /* Black background with opacity */
+        z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+        cursor: pointer; /* Add a pointer on hover */
+    }
+    #overlay_button {
+        border-radius: 8px;
+        color: #8B8B8B;
+        font-size: 14px;
+        font-weight: 100;
+        padding: 14px;
+        background-color: rgba(23, 23, 23, 0.39);
+        border: solid rgba(255, 255, 255, 0.53) 1px;
+        text-decoration: none;
+        display: inline-block;
+        cursor: pointer;
+        text-align: center;
+    }
+
+        #overlay_button:hover {
+            background: rgba(201, 201, 201, 0.21);
+            border: solid #8B8B8B 1px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+</style>
+
+<script>
+    function overlay_on() {
+        document.getElementById("overlay").style.display = "block";
+    }
+
+    function overlay_off() {
+        document.getElementById("overlay").style.display = "none";
+    }
+</script>
+
+
+<style>
+    #map-report div.gmnoprint,
+    #map-report div.gmnoscreen {
+        display: none;
+    }
+
+    .slidecontainer {
+        width: 100%;
+    }
+
+    .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 25px;
+        background: #333333;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+    }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #F3D19C;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: #F3D19C;
+            cursor: pointer;
+        }
+</style>
+
+<br />
+
+
+
+@* To move down the sticky footer from _layout *@
+<div style="height: 30px"></div>

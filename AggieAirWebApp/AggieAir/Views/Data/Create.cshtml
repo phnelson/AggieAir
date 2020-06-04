@@ -1,0 +1,237 @@
+﻿@model AggieAir.Models.SensorData
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<span class="display-4 text-white-50" style="font-size: 90px;">Upload</span>
+<span class="display-4" style="font-size: 90px;"> Sensor Data</span>
+
+@*<h4>SensorData</h4>*@
+<hr />
+<div class="row" style="display: none;">
+    @* NOTE: DISPLAY TOGGLED OFF!!!!!!!! *@
+    <div class="col-md-4">
+        <form asp-action="Create" id="myform">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @*<div class="form-group">
+                    <label asp-for="Id" class="control-label"></label>
+                    <input asp-for="Id" class="form-control" />
+                    <span asp-validation-for="Id" class="text-danger"></span>
+                </div>*@
+            <div class="form-group">
+                <label asp-for="PM10" class="control-label"></label>
+                <input asp-for="PM10" class="form-control" id="pm10" />
+                <span asp-validation-for="PM10" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PM25" class="control-label"></label>
+                <input asp-for="PM25" class="form-control" id="pm25" />
+                <span asp-validation-for="PM25" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PMTen" class="control-label"></label>
+                <input asp-for="PMTen" class="form-control" id="pmten" />
+                <span asp-validation-for="PMTen" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GPGLL" class="control-label"></label>
+                <input asp-for="GPGLL" class="form-control" id="gpgll" />
+                <span asp-validation-for="GPGLL" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div style="display: none;">
+    @* NOTE: DISPLAY TOGGLED OFF!!!!!!!! *@
+<a asp-action="Index">Back to List</a>
+</div>
+
+<style>
+    #progress_bar {
+        margin: 10px 0;
+        padding: 3px;
+        border: 1px solid #000;
+        font-size: 14px;
+        clear: both;
+        opacity: 0;
+        -moz-transition: opacity 1s linear;
+        -o-transition: opacity 1s linear;
+        -webkit-transition: opacity 1s linear;
+    }
+
+    #progress_bar.loading {
+        opacity: 1.0;
+    }
+
+    #progress_bar .percent {
+        background-color: #99ccff;
+        height: auto;
+        width: 0;
+    }
+
+    #files {
+        display: flex;
+        align-content: center;
+    }
+
+    .uploadlabel {
+        position:absolute;
+        top: 40%;
+        left: 50%;
+
+        color: darkgray;
+
+
+
+        border: dashed;
+    }
+
+</style>
+
+<label for="files" class="uploadlabel">Select raw data file</label>
+<input type="file" id="files" name="file" style="display: none;"/>
+
+
+@*<button onclick="abortRead();">Cancel read</button>*@
+<div id="progress_bar"><div class="percent">0%</div></div>
+
+<script>
+    var reader;
+    var progress = document.querySelector('.percent');
+
+    function abortRead() {
+        reader.abort();
+    }
+
+    function errorHandler(evt) {
+        switch (evt.target.error.code) {
+            case evt.target.error.NOT_FOUND_ERR:
+                alert('File Not Found!');
+                break;
+            case evt.target.error.NOT_READABLE_ERR:
+                alert('File is not readable');
+                break;
+            case evt.target.error.ABORT_ERR:
+                break; // noop
+            default:
+                alert('An error occurred reading this file.');
+        };
+    }
+
+    function updateProgress(evt) {
+        // evt is an ProgressEvent.
+        if (evt.lengthComputable) {
+            var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
+            // Increase the progress bar length.
+            if (percentLoaded < 100) {
+                progress.style.width = percentLoaded + '%';
+                progress.textContent = percentLoaded + '%';
+            }
+        }
+    }
+
+    function handleFileSelect(evt) {
+        // Reset progress indicator on new file selection.
+        progress.style.width = '0%';
+        progress.textContent = '0%';
+
+        reader = new FileReader();
+        var output = [];
+        var counter = 0;
+
+        reader.onerror = errorHandler;
+        reader.onprogress = updateProgress;
+        reader.onabort = function (e) {
+            alert('File read cancelled');
+        };
+        reader.onloadstart = function (e) {
+            document.getElementById('progress_bar').className = 'loading';
+        };
+        reader.onload = function (e) {
+            // Ensure that the progress bar displays 100% at the end.
+            progress.style.width = '100%';
+            progress.textContent = 'Upload in progress...';
+            //setTimeout("document.getElementById('progress_bar').className='';", 2000);
+
+            var text = e.target.result;
+            var lines = text.split(/[\r\n]+/g); // Windows and Unix linebreak support
+            var counter = 0; // Total documents created
+
+            var continueLoop = true;
+            var i = -1;
+            while (i < lines.length) {
+                //if (continueLoop) {
+                //    i++;
+                //}
+                i++;
+
+
+                console.log("Parsing: " + lines[i]);
+
+
+
+                if (lines[i][0] == 'P' && lines[i + 1][0] == '"' && continueLoop) { // Valid raw data pair
+                    //continueLoop = false;
+
+                    var PM_line = lines[i].match(/\S+/g);
+                    var extractedPM = parseInt(PM_line[5]); // extracts PM
+
+                    console.log(extractedPM);
+
+                    var GPGLL_line = lines[i + 1];
+
+                    document.getElementById("pm10").value = 1;
+                    document.getElementById("pm25").value = extractedPM;
+                    document.getElementById("pmten").value = 1;
+                    document.getElementById("gpgll").value = GPGLL_line;
+                    document.getElementById("myform").submit();
+                    document.getElementById("myform").reset();
+
+                    console.log("FORM SUBMITTED: " + counter++);
+
+                    //setTimeout(function () { continueLoop = true; }, 500);
+
+
+
+
+                    // parse the line...
+                    //var GPGLL_line = lines[i + 1].split(",");
+                    //for (var each in GPGLL_line) {
+                    //    console.log(GPGLL_line[each]);
+                    //}
+
+
+                }
+
+            }
+            //document.getElementById("myform").addEventListener = ("submit", function (f) {
+            //    console.log("completed!");
+            //    continueLoop = true;
+            //});
+
+        }
+
+        // Read in the image file as a binary string.
+        //reader.readAsBinaryString(evt.target.files[0]);
+
+        // Instead, read in file as txt
+        reader.readAsText(evt.target.files[0]);
+
+    }
+
+    document.getElementById('files').addEventListener('change', handleFileSelect, false);
+</script>
+
+
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
