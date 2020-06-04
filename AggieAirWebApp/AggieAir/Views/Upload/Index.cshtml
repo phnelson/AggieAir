@@ -11,15 +11,11 @@
 </div>
 <br />
 
-<div style="height: 100px;">
-
-</div>
-
+<div style="height: 100px;"></div>
 
 <form method="post" enctype="multipart/form-data" asp-controller="Upload" asp-action="Index">
     <div class="form-group">
         <div class="d-flex justify-content-center">
-            @*<p class="text-white-50">Upload one or more files using this form:</p>*@
             <label for="uploadPrompt" class="uploadlabel" id="uploadLabel">Select Raw Data File</label>
             <input type="file" id="uploadPrompt" name="files" style="display: none;" />
         </div>
@@ -29,7 +25,6 @@
         <div id="file-upload-filename" class="display-4" style="font-size: 60px; color: grey;"></div>
     </div>
 
-
     <div class="form-group">
         <div class="d-flex justify-content-center">
             <label for="submitButton" class="submitButton" id ="submitLabel" style="display: none;">Begin Upload</label>
@@ -37,9 +32,6 @@
         </div>
     </div>
 </form>
-
-
-
 
 <script>
     var input = document.getElementById('uploadPrompt');
@@ -54,37 +46,26 @@
         var uploadLabel = document.getElementById('uploadLabel');
         uploadLabel.style.display = 'none';
 
-        // the change event gives us the input it occurred in 
         var input = event.srcElement;
-        // the input has an array of files in the `files` property, each one has a name that you can use. We're just using the name here.
         var fileName = input.files[0].name;
-        // use fileName however fits your app best, i.e. add it into a div
         infoArea.textContent = "You've selected: " + fileName;
     }
-
-
-
 </script>
 
 <style>
     .uploadlabel {
-	    /*background:linear-gradient(to bottom, #7d7f80 5%, #828f9c 100%);*/
 	    background-color:#7d7f80;
-	    /*border-radius:11px;*/
 	    border:1px solid #000000;
 	    display:inline-block;
 	    cursor:pointer;
 	    color:#ffffff;
-	    /*font-family:Arial;*/
 	    font-size:15px;
 	    padding:32px 63px;
 	    text-decoration:none;
-
-		margin-top: 20px;
-		margin-bottom: 50px;
+	    margin-top: 20px;
+	    margin-bottom: 50px;
     }
     .uploadlabel:hover {
-	    /*background:linear-gradient(to bottom, #828f9c 5%, #7d7f80 100%);*/
 	    background-color:#828f9c;
     }
     .uploadlabel:active {
@@ -92,30 +73,23 @@
 	    top:1px;
     }
 
-
     .submitButton {
-        /*background:linear-gradient(to bottom, #7d7f80 5%, #828f9c 100%);*/
         background-color: #7d7f80;
-        /*border-radius:11px;*/
         border: 1px solid #000000;
         display: inline-block;
         cursor: pointer;
         color: #ffffff;
-        /*font-family:Arial;*/
         font-size: 15px;
         padding: 16px 31px;
         text-decoration: none;
-
         margin-top: 20px;
     }
     .submitButton:hover {
-	    /*background:linear-gradient(to bottom, #828f9c 5%, #7d7f80 100%);*/
-	    background-color:#828f9c;
+	background-color:#828f9c;
     }
     .submitButton:active {
-	    position:relative;
-	    top:1px;
+	position:relative;
+	top:1px;
     }
-
 
 </style>
